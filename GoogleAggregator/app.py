@@ -13,26 +13,31 @@ yellow = "\x1b[1;33m"
 stopColor = "\x1b[0m"
 
 # Variables affected by the users prompts
-urls = False
-titles = False
-descriptions = False
+# urls = False
+# titles = False
+# descriptions = False
 
-columns = ""
+outputColumns = [] 
 
-def checkInput(prompt, bool):
-    prompt.lower()
-    if prompt == "y" or prompt == "yes":
-        urls = True
-        columns += "URL "
-        print("urls selected")
+def checkInput(inpt, val):
+    inpt.lower()
+    print(inpt)
+    if inpt == "y" or inpt == "yes":
+        outputColumns.append(val)
+        print(val + " selected")
+        return
 
-    if prompt == "n" or urlq == "no":
-        print("urls not Selected")
+    if inpt == "n" or inpt == "no":
+        print(val + " not Selected")
+        return
 
     else:
         print("Invalid input, exiting program")
         sys.exit()
+
     
+
+
 
 
 print(clearScreen)
@@ -50,62 +55,72 @@ print()
 print("{}Select the parameters you would like to tabulate: {}".format(lightGreen, stopColor))
 
 urlq = input("{}Urls y or n: {}".format(lightPurple, stopColor))
-urlq.lower()
-if urlq == "y" or urlq == "yes":
-    urls = True
-    columns += "URL "
-    print("urls selected")
 
-if urlq == "n" or urlq == "no":
-    print("urls not Selected")
-
-else:
-    print("Invalid input, exiting program")
-    sys.exit()
+checkInput(urlq, "URL")
+print(outputColumns)
 
 
 titleq = input("{}Title y or n: {}".format(lightRed, stopColor))
-titleq = titleq.lower()
-if titleq == "y" or titleq == "yes":
-    titles = True
-    columns += "TITLE "
-    print("titles selected")
-
-elif titleq == "n" or titleq == "no":
-    print("titles not Selected")
-
-else:
-    print("Invalid input, exiting program")
-    sys.exit
+checkInput(titleq, "TITLE")
+print(outputColumns)
 
 descq = input("{}Description y or n: {}".format(yellow, stopColor))
-descq = descq.lower()
-if descq == "y" or descq == "yes":
-    descriptions = True
-    columns += "DESCRIPTIONS "
-    print("titles selected")
+checkInput(descq, "DESCRIPTION")
+print(outputColumns)
 
-elif descq == "n" or descq == "no":
-    print("Descriptions not Selected")
 
-else:
-    print("Invalid input, exiting program")
-    sys.exit
 
 print()
 numResults = input("{}Enter the number of searches you would like to tabulate: {}".format(lightGreen, stopColor))
 
 print()
-print("{}A CSV file with {} rows and the columnns of {}: {}".format(lightWhite, numResults, columns, stopColor))
+print("{}A CSV file with {} rows and the columnns of: {} {} will be generated".format(lightWhite, numResults, outputColumns, stopColor))
 
+numResults = int(numResults)
 search = search(query, num_results=numResults, advanced=True)
 
 outputArray = []
-for s in search:
-    s.url = s.url.replace(',', ' ')
-    s.title = s.title.replace(',', ' ')
-    s.description = s.description.replace(',', ' ')
-    outputArray.append([s.url, s.title, s.description])
+
+if len(outputColumns) == 1 and outputColumns[0] == "URL":
+    for s in search:
+        s.url = s.url.replace(',', ' ')
+        outputArray.append([s.url])
+
+if len(outputColumns) == 1 and outputColumns[0] == "TITLE":
+    for s in search:
+        s.title = s.title.replace(',', ' ')
+        outputArray.append([s.title])
+
+if len(outputColumns) == 1 and outputColumns[0] == "DESCRIPTION":
+    for s in search:
+        s.description = s.description.replace(',', ' ')
+        outputArray.append([s.description])
+
+if len(outputColumns) == 2 and outputColumns[0] == "URL" and outputColumns[1] == "TITLE":
+    for s in search:
+        s.url = s.url.replace(',', ' ')
+        s.title = s.title.replace(',', ' ')
+        outputArray.append([s.url, s.title])
+
+if len(outputColumns) == 2 and outputColumns[0] == "URL" and outputColumns[1] == "DESCRIPTION":
+    for s in search:
+        s.url = s.url.replace(',', ' ')
+        s.description = s.description.replace(',', ' ')
+        outputArray.append([s.url, s.description])
+
+if len(outputColumns) == 2 and outputColumns[0] == "TITLE" and outputColumns[1] == "DESCRIPTION":
+    for s in search:
+        s.title = s.title.replace(',', ' ')
+        s.description = s.description.replace(',', ' ')
+        outputArray.append([s.title, s.description])
+
+
+if len(outputColumns) == 3:
+    for s in search:
+        s.url = s.url.replace(',', ' ')
+        s.title = s.title.replace(',', ' ')
+        s.description = s.description.replace(',', ' ')
+        outputArray.append([s.url, s.title, s.description])
 
 
 
